@@ -1,7 +1,6 @@
 import express from 'express'
 import fs from 'fs'
 import multer from 'multer'
-import cors from 'cors'
 
 import mongoose from 'mongoose'
 
@@ -10,6 +9,7 @@ import { registerValidation, loginValidation, postCreateValidation } from './val
 import { handleValidationErrors, checkAuth } from './utils/index.js'
 
 import { UserController, PostController } from './controllers/index.js'
+const helmet = require('helmet');
 
 mongoose.connect("mongodb+srv://icelink39:9210369979Ash@cluster0.sthnhtn.mongodb.net/blog?retryWrites=true&w=majority&appName=Cluster0").then(() => console.log('DB ok')).catch(err => console.log('DB error :', err))//process.env.MONGODB_URI
 
@@ -30,9 +30,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 app.use(express.json())
-app.use(cors())
 app.use('/uploads', express.static('uploads'))
-
+app.use(helmet());
 app.post('/auth/login', loginValidation, handleValidationErrors, UserController.login)
 app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register)
 app.get('/auth/me', checkAuth, UserController.getMe)
